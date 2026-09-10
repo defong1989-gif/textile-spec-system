@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>紡織紗織與機台規格對照系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --header-bg: #1e3a8a; /* 表格標題列底色 */
+      --border: #e2e8f0;
+      --edit: #f59e0b;
+      --edit-hover: #d97706;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 24px 16px;
+    }
+
+    .container {
+      max-width: 1536px;
+      margin: 0 auto;
+    }
+
+    /* 頂部標題列 (Header) 藍色底色與漸層風格 */
+    .header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      padding: 24px 32px;
+      border-radius: 12px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+      box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.25);
+    }
+
+    .header-title h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+    }
+
+    .header-title p {
+      color: #93c5fd;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .badge-sync {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(4px);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .badge-sync::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #34d399;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #34d399;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      transition: box-shadow 0.2s ease;
+    }
+
+    /* 控制與搜尋區塊列 */
+    .table-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding-left: 38px;
+      padding-right: 12px;
+      font-size: 15px;
+      height: 42px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* 按鈕樣式 */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-secondary {
+      background-color: #f1f5f9;
+      color: var(--text-muted);
+    }
+
+    .btn-secondary:hover { background-color: #e2e8f0; }
+
+    /* Table Design */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--header-bg);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: #334155;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      transition: background-color 0.15s ease;
+    }
+
+    tbody tr:hover {
+      background-color: #f8fafc;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Badges & Tags */
+    .badge-yarn {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .text-bold { font-weight: 600; color: var(--text-main); }
+    .text-muted { color: var(--text-muted); font-size: 13px; }
+    .note-text {
+      color: #64748b;
+      font-size: 13px;
+      max-width: 200px;
+      white-space: normal;
+      word-break: break-all;
+    }
+
+    /* Action Buttons inside Table */
+    .btn-action {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-edit { background-color: #fef3c7; color: #b45309; margin-right: 4px; }
+    .btn-edit:hover { background-color: #fde68a; }
+
+    .btn-delete { background-color: #fee2e2; color: #b91c1c; }
+    .btn-delete:hover { background-color: #fca5a5; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+
+    /* Modal (彈出視窗) 樣式修正 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease-in-out;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 600px;
+      max-height: 85vh; /* 限制最大高度，防止超出一頁 */
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      transform: translateY(20px) scale(0.95);
+      transition: all 0.25s ease-in-out;
+      display: flex;
+      flex-direction: column; /* 讓 Header, Body, Footer 上下排列 */
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      background-color: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0; /* 固定頂部標題 */
+    }
+
+    .modal-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      color: var(--text-muted);
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-close:hover { background-color: #e2e8f0; color: var(--text-main); }
+
+    /* 表單獨立滾動區域 */
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto; /* 內容超出時出現獨立滾動條 */
+      flex: 1;
+    }
+
+    /* 固定的底部按鈕區 */
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      background-color: #f8fafc;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      flex-shrink: 0; /* 確保按鈕區絕對不會被遮擋或擠壓 */
+    }
+
+    /* Form Layout Inside Modal */
+    .form-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text-main);
+      background-color: #fff;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- 頂部標題列 -->
+  <header class="header">
+    <div class="header-title">
+      <h1>紡織規格與機台對照系統</h1>
+      <p>即時查詢、建立與管理客戶紗織工程規格數據</p>
+    </div>
+    <div class="badge-sync">雲端資料庫連線中</div>
+  </header>
+
+  <!-- 全寬度的主要表格卡片 -->
+  <div class="card">
+    <div class="table-toolbar">
+      <div class="search-wrapper">
+        <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <input type="text" id="searchInput" class="search-input" placeholder="搜尋客戶、品名、紗種規格、備註...">
+      </div>
+      <button class="btn btn-primary" onclick="openModal()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        新增規格資料
+      </button>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>客戶</th>
+            <th>品名</th>
+            <th>紗種規格</th>
+            <th>成品 幅寬 / 碼重</th>
+            <th>機台 (吋/針)</th>
+            <th>胚布 幅寬 / 碼重</th>
+            <th>紗速</th>
+            <th>備註</th>
+            <th style="text-align: center;">操作</th>
+          </tr>
+        </thead>
+        <tbody id="dataTable">
+          <!-- 動態數據載入 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 彈出視窗 (Modal) -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="formTitle">新增規格資料</h3>
+      <button class="btn-close" onclick="closeModal()">&times;</button>
+    </div>
+    
+    <!-- 表單包覆整個 Modal 內容 -->
+    <form id="specForm" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+      <div class="modal-body">
+        <input type="hidden" id="editRowIndex" value="">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>客戶名稱 *</label>
+            <input type="text" id="customer" placeholder="請輸入客戶名稱" required>
+          </div>
+          <div class="form-group">
+            <label>布種品名 *</label>
+            <input type="text" id="productName" placeholder="請輸入品名" required>
+          </div>
+          <div class="form-group">
+            <label>紗種規格 *</label>
+            <input type="text" id="yarnType" placeholder="例如: 75D/72F Polyester" required>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>成品幅寬 (吋)</label>
+              <input type="text" id="width" placeholder="60">
+            </div>
+            <div class="form-group">
+              <label>成品碼重 (g/y)</label>
+              <input type="text" id="weight" placeholder="200">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>機台吋數 (吋)</label>
+              <input type="text" id="machineInch" placeholder="30">
+            </div>
+            <div class="form-group">
+              <label>機台針數 (G)</label>
+              <input type="text" id="machineGauge" placeholder="24">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>胚布幅寬 (吋)</label>
+              <input type="text" id="greigeWidth" placeholder="65">
+            </div>
+            <div class="form-group">
+              <label>胚布碼重 (g/y)</label>
+              <input type="text" id="greigeWeight" placeholder="220">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>紗速 (m/min)</label>
+            <input type="text" id="yarnSpeed" placeholder="120">
+          </div>
+
+          <div class="form-group">
+            <label>備註說明</label>
+            <textarea id="note" placeholder="可輸入加工注意事項、特殊拉力需求等..."></textarea>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 固定在底部的按鈕區域 -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+        <button type="submit" id="submitBtn" class="btn btn-primary">儲存資料</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // 請替換為您的 Google Apps Script 部署 URL
+  const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+
+  let dbData = [];
+
+  // 載入資料
+  async function loadData() {
+    if (GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
+      dbData = [
+        { rowIndex: 2, customer: "福懋興業", productName: "雙面機能布", yarnType: "75D/72F Poly", width: "60", weight: "200", machineInch: "30", machineGauge: "24", greigeWidth: "65", greigeWeight: "220", yarnSpeed: "120", note: "需做定型張力控制" },
+        { rowIndex: 3, customer: "遠東新世紀", productName: "單面彈性汗布", yarnType: "40S 精梳棉 + 40D Spandex", width: "68", weight: "160", machineInch: "34", machineGauge: "28", greigeWidth: "72", greigeWeight: "175", yarnSpeed: "140", note: "注意捲邊問題" }
+      ];
+      renderTable(dbData);
+      return;
+    }
+
+    try {
+      const res = await fetch(GOOGLE_SCRIPT_URL);
+      dbData = await res.json();
+      renderTable(dbData);
+    } catch (err) {
+      console.error("載入失敗:", err);
+    }
+  }
+
+  // 渲染表格
+  function renderTable(data) {
+    const tbody = document.getElementById("dataTable");
+    
+    if (data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="9" class="empty-state">查無對應的數據資料</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = data.map(item => `
+      <tr>
+        <td class="text-bold">${item.customer || ''}</td>
+        <td>${item.productName || ''}</td>
+        <td><span class="badge-yarn">${item.yarnType || ''}</span></td>
+        <td>${item.width || '-'}" <span class="text-muted">/ ${item.weight || '-'}g</span></td>
+        <td>${item.machineInch || '-'}" <span class="text-muted">/ ${item.machineGauge || '-'}G</span></td>
+        <td>${item.greigeWidth || '-'}" <span class="text-muted">/ ${item.greigeWeight || '-'}g</span></td>
+        <td>${item.yarnSpeed || '-'} <span class="text-muted">m/min</span></td>
+        <td class="note-text">${item.note || '-'}</td>
+        <td style="text-align: center;">
+          <button class="btn-action btn-edit" onclick="startEdit(${item.rowIndex})">編輯</button>
+          <button class="btn-action btn-delete" onclick="deleteItem(${item.rowIndex})">刪除</button>
+        </td>
+      </tr>
+    `).join("");
+  }
+
+  // 搜尋過濾
+  document.getElementById("searchInput").addEventListener("input", (e) => {
+    const keyword = e.target.value.toLowerCase();
+    const filtered = dbData.filter(item => 
+      Object.values(item).some(val => String(val).toLowerCase().includes(keyword))
+    );
+    renderTable(filtered);
+  });
+
+  /* --- Modal 開關控制 --- */
+  function openModal() {
+    document.getElementById("modalOverlay").classList.add("active");
+  }
+
+  function closeModal() {
+    document.getElementById("modalOverlay").classList.remove("active");
+    resetForm();
+  }
+
+  // 點擊背景黑影關閉視窗
+  function handleOverlayClick(e) {
+    if (e.target.id === "modalOverlay") {
+      closeModal();
+    }
+  }
+
+  // 按下 Esc 鍵關閉視窗
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModal();
+  });
+
+  // 重置表單
+  function resetForm() {
+    document.getElementById("editRowIndex").value = "";
+    document.getElementById("specForm").reset();
+    document.getElementById("formTitle").innerText = "新增規格資料";
+    document.getElementById("submitBtn").innerText = "儲存資料";
+  }
+
+  // 開始編輯
+  function startEdit(rowIndex) {
+    const item = dbData.find(d => d.rowIndex === rowIndex);
+    if (!item) return;
+
+    document.getElementById("editRowIndex").value = item.rowIndex;
+    document.getElementById("customer").value = item.customer || "";
+    document.getElementById("productName").value = item.productName || "";
+    document.getElementById("yarnType").value = item.yarnType || "";
+    document.getElementById("width").value = item.width || "";
+    document.getElementById("weight").value = item.weight || "";
+    document.getElementById("machineInch").value = item.machineInch || "";
+    document.getElementById("machineGauge").value = item.machineGauge || "";
+    document.getElementById("greigeWidth").value = item.greigeWidth || "";
+    document.getElementById("greigeWeight").value = item.greigeWeight || "";
+    document.getElementById("yarnSpeed").value = item.yarnSpeed || "";
+    document.getElementById("note").value = item.note || "";
+
+    document.getElementById("formTitle").innerText = "編輯數據 (第 " + rowIndex + " 列)";
+    document.getElementById("submitBtn").innerText = "更新數據";
+    
+    openModal();
+  }
+
+  // 表單送出 (新增 / 更新)
+  document.getElementById("specForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const editRowIndex = document.getElementById("editRowIndex").value;
+    const action = editRowIndex ? "update" : "create";
+
+    const formData = {
+      action: action,
+      rowIndex: editRowIndex,
+      customer: document.getElementById("customer").value,
+      productName: document.getElementById("productName").value,
+      yarnType: document.getElementById("yarnType").value,
+      width: document.getElementById("width").value,
+      weight: document.getElementById("weight").value,
+      machineInch: document.getElementById("machineInch").value,
+      machineGauge: document.getElementById("machineGauge").value,
+      greigeWidth: document.getElementById("greigeWidth").value,
+      greigeWeight: document.getElementById("greigeWeight").value,
+      yarnSpeed: document.getElementById("yarnSpeed").value,
+      note: document.getElementById("note").value
+    };
+
+    closeModal();
+
+    if (GOOGLE_SCRIPT_URL !== "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(formData)
+      });
+      alert(action === "update" ? "更新成功！" : "新增成功！");
+      loadData();
+    } else {
+      alert("展演模式：請先填入真實 Google Apps Script URL");
+    }
+  });
+
+  // 刪除數據
+  async function deleteItem(rowIndex) {
+    if (!confirm("確定要刪除這筆數據嗎？")) return;
+
+    if (GOOGLE_SCRIPT_URL !== "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "delete", rowIndex: rowIndex })
+      });
+      alert("已刪除該筆資料！");
+      loadData();
+    } else {
+      alert("展演模式：請先填入真實 Google Apps Script URL");
+    }
+  }
+
+  loadData();
+</script>
+
+</body>
+</html>
