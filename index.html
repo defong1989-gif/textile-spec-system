@@ -520,15 +520,16 @@
 </div>
 
 <script>
-  // 已填入最新的 Google Apps Script 部署 URL
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxk19qJP4Yb-kcZQbH-e3bGOrEN3T8rexUyj8TcfELTLmSQka4cZzEIQr6_h7dxXYo5/exec";
+  // 最新發布的 Apps Script URL
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1phbyM3dz0tqfs50koKkJrDt8nxOIBitOQFKZDN01tsKv2r6OZ6q-TNeASC9Lvcf5/exec";
 
   let dbData = [];
 
-  // 載入資料
+  // 載入資料 (加入防快取 timestamp)
   async function loadData() {
     try {
-      const res = await fetch(GOOGLE_SCRIPT_URL);
+      const fetchUrl = `${GOOGLE_SCRIPT_URL}?t=${new Date().getTime()}`;
+      const res = await fetch(fetchUrl, { cache: "no-store" });
       dbData = await res.json();
       renderTable(dbData);
     } catch (err) {
@@ -677,7 +678,7 @@
     }
   }
 
-  // 頁面初始化載入
+  // 初始化載入
   loadData();
 </script>
 
